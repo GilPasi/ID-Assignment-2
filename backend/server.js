@@ -1,82 +1,98 @@
-/*
-Internet Development Assignment 3
-Authors:
-Yulia Moshan 319656510
-Gil Pasi     206500936
-
-Dependecies: nodemon,express,mongojs,cors,body-parser*/
-
-
-//__________Setup______________
 const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const cart = require('./cart.js')
+const cors = require('cors');
+const cart = require('./src/cart.js')
 const app = express()
-const port = 8080
-const mongo = require('mongojs')
-
+const port = 3001
+const mongojs = require('mongojs')
 const MONGO_USERNAME = 'Student'
 const MONGO_PWD = 'Webdev2023Student'
 const MONGO_DB = 'webdev2023'
 const MONGO_CONN = "mongodb+srv://"+MONGO_USERNAME +":" +MONGO_PWD + "@cluster0.uqyflra.mongodb.net/"+MONGO_DB;
-console.log(MONGO_CONN)
-const db = mongo(MONGO_CONN);
-const cartsCollection = db.carts_206500936;
 
+const db = mongojs(MONGO_CONN);
+let collection = null;
+collection = db.carts_206500936
 
-//__________Middlewares___________
-
-app.use(cors({
-    origin:'*',
-    allowedHeaders:'Origin, X-Requested-With, Content-Type, Accept'
-}))
-//Log all requests for debugging purposes
-const log = (res,req,next)=>{
-    console.log(`New request for: ${req}`)
-    next();
+if (!collection){
+  console.error("Please un-comment line #14 and change the collection name!")
+  return;
 }
-app.use(log)
+
+const logRequest = (req,res,next) => {
+  console.log(`Received request to ${req.url}`)
+  next()
+}
+app.use(logRequest)
+app.use(cors())
 app.use(express.json())
 
-//__________Routes______________
 
-app.get('/test', (req, res) => {
-    const crt = cart.new()
-    cart.add(crt , "lovePotion" , 1)
-    cart.recalc(crt)
-    return res.json(crt)
-})
-
-
-
-app.get('/products' , (req,res)=>{
-    cartsCollection.findOne({},(err , doc)=>{
-        if(err)
-            res.json(err)
-        else
-            res.json(doc)
-    })
+app.get('/products', (req, res) => {
 
 })
 
-app.post('/products' ,(req , res)=>{ 
-    const {body} = res
-    console.log(body.product_id)   
-    return res.json()
-      
 
-    // cartsCollection.findOne({} , (err,doc)=>{
-    //     if(err)
-    //         res.json(err)
-    //     else{
-    //             cart.add(doc , "lovePotion" , 1 )
-    //         cart.recalc(doc)
-    //         cartsCollection.save(doc , ()=>{res.json(doc)})
-    //     }
-    // })
+app.get('/cart',(req, res) => {
+  let id = null;
+  if (req.query['id'] && req.query['id'].length>=12){
+    id = mongojs.ObjectId(req.query['id'])
+  }
+  
+  collection.findOne({_id:id},(err,cartObj)=>{
+    if (!cartObj){
+      cartObj = cart.new();
+      collection.save(cartObj, (err,cartObj)=>{
+        res.json(cartObj);
+      });
+    }else {
+      res.json(cartObj)
+    }
+  });
+});
+
+
+
+app.post('/cart/product',(req, res) => {
+  const cart_id = req.body['cart_id']
+  const product_id = req.body['product'];
+  const quantity = req.body['quantity'] ;
+
+  const id = mongojs.ObjectId(cart_id);
+  collection.findOne({_id:id},(err,cartObj)=>{
+    if (!cartObj){
+      cartObj = cart.new();
+    }
+    if(quantity)
+      cart.update_quantity(cartObj,product_id, quantity )
+    else
+      cart.add(cartObj,product_id, 1);
+
+    cart.recalc(cartObj);
+    collection.save(cartObj, (err,cartObj)=>{
+      res.json(cartObj);
+    });
+  });
+
+} );
+
+app.delete('/cart/product',(req, res) => {
+  const product_id = req.body['product'];
+  const cart_id = req.body['cart_id'];
+  const id = mongojs.ObjectId(cart_id);
+
+  collection.findOne({_id:id},(err,cartObj)=>{
+    cart.remove(cartObj,product_id);
+    cart.recalc(cartObj);
+
+    collection.save(cartObj, (err,cartObj)=>{
+      res.json(cartObj);
+    });
+  });
+  
 })
 
 
-app.use(express.static('frontend'))
-app.listen(port ,()=>console.log("Server is listening on port " + port))
+app.listen(port, ()=>{
+  console.log(`Shop API running on http://localhost:${port}`)
+})
+
