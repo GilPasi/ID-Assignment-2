@@ -5,15 +5,55 @@ function App() {
   const [step,setStep] = useState("buy");
   const [showCart,setShowCart] = useState(false);
   const [cart, setCart ] = useState([]);
+  const [itemsList , setItemsList] = useState(<></>);
 
   useEffect(() => {
-    fetch("http://localhost:8080/test")
+    fetch("http://localhost:8080/products")
       .then((res) => res.json())
-      .then((data) =>setCart(data.message))
+      .then((inCart) =>
+      // console.log("input" , inCart)
+      setCart(inCart)
+      
+      )
       .catch(rejected => {
         console.log(rejected);
         });
   }, []);
+
+  useEffect(() =>{
+    let items = cart.items
+    if(!items)return;
+
+    console.log("items" ,items)
+    setItemsList( Object.entries(items)
+          .map(([key, value])=>
+          <li key={key} className="spannner">
+            {value.name}
+            <input ></input>
+            <span className='cart-data'>{value.quantity}⚗️</span>
+            <span className='cart-data'>{(value.quantity)*(value.unit_price)}💰</span>
+            <button className='button-x'>X</button>
+          </li>))
+  },[cart])
+
+  const handleAdd =(e)=>{
+    
+
+      const requestOptions = {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json',
+          'Accept': 'application/json'},
+          body: JSON.stringify({roduct_id : "e.target.key"})
+      };
+      //מאיפה זה עובד??? הקריאה הזאת?
+  //כתוב לי שה - bodyparser  הוא deprecated
+  //AHLA
+    fetch("http://localhost:8080/products" ,requestOptions)
+    .then((res) => console.log('resss',res))
+    .catch(err=>console.log(err))
+    // .then((inCart) =>setCart(inCart))
+    
+  }
 
 
   return (
@@ -23,13 +63,7 @@ function App() {
         <div id="cart" style={{visibility:showCart ? "" : "hidden"}}>
           <h3 className="title-small">Your cart</h3>
         <ul>
-          {products.map(product=><li className="spannner">
-                                    {product.name}
-                                    <input value={cart.quantity}></input>
-                                    <span className='cart-data'>a⚗️</span>
-                                    <span className='cart-data'>a💰</span>
-                                    <button className='button-x'>X</button>
-                                </li>)}
+          {itemsList}
         </ul>
         </div>
 
@@ -45,13 +79,18 @@ function App() {
       <div>
       
         <section className="products aligner">
-            {products.map(product=><div className="product centerizer">
+            {products
+            .map(product=><div 
+                            key={product.id}
+                            className="product centerizer" 
+                            onClick={handleAdd}
+                            >
                                     <h3>{product.name}</h3>
                                     <img src={"../images/" + product.image}/>
                                     <span>{product.price} 💰</span>
                                     <p>{product.description}</p>
 
-                                  </div>)}
+                          </div>)}
 
         </section>
         <div className="aligner" style={{margin:"50px"}}>

@@ -11,7 +11,8 @@ const get_empty_cart = ()=>{
 const cart_add = (cartObj, product_id, quantity) => {
   if (product_id in cartObj.items){
     cartObj.items[product_id].quantity += quantity;
-  }else{
+  }
+  else{
     cartObj.items[product_id] = {
       name: products[product_id].name, 
       quantity: quantity,

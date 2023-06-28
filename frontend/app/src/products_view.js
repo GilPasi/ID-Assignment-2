@@ -1,11 +1,13 @@
 const products = [
     {
+        id:"lovePotion" ,
         name :"love potion",
         description:"Prepare to find your soulmate", 
         price:25,
         image :"love_potion.jpg"
     },
     {
+        id:"snakePotion" ,
         name :"snake potion",
         description:"Do not try this at home!", 
         price:40,
@@ -13,6 +15,7 @@ const products = [
     },
 
     {
+        id:"leavesPotion" ,
         name :"leaves potion",
         description:"AKA green tea", 
         price:100,
@@ -20,6 +23,7 @@ const products = [
     },
 
     {
+        id:"kingPotion" ,
         name :"king potion",
         description:"Be a king for one day", 
         price:1000,
