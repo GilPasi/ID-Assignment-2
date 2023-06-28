@@ -1,6 +1,7 @@
 const Product = (props) => {
+
   return (
-    <div className="product">
+    <div className="product" >
       <h3 className="name">{props.name}</h3>
       <img src={`../images/${props.img}`} />
       <div className="desc">{props.description}</div>

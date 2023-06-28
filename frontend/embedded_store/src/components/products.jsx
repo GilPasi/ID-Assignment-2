@@ -4,6 +4,7 @@ const Products = (props) => {
   return (
     <div className="products">
       <Product
+        productId="arduino"
         name="Arduino"
         img="ard.jpg"
         price={12}
@@ -15,6 +16,7 @@ const Products = (props) => {
       />
 
       <Product
+        productId="rpi"
         name="Raspberry Pi"
         img="rasp.jpg"
         price={99}
@@ -22,6 +24,7 @@ const Products = (props) => {
         description="Small single-board computer (SBCs)"
       />
       <Product
+        productId="esp32"
         name="ESP-32"
         img="esp.webp"
         price={9.99}

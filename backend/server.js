@@ -57,18 +57,29 @@ app.post('/cart/product',(req, res) => {
   const product_id = req.body['product'];
   const quantity = req.body['quantity'] ;
 
+  console.log("body" , req.body)
+
+  
   const id = mongojs.ObjectId(cart_id);
   collection.findOne({_id:id},(err,cartObj)=>{
+    
+
+
+
+    console.log(cartObj)
+    
     if (!cartObj){
       cartObj = cart.new();
     }
-    if(quantity)
+
+    if(quantity){
       cart.update_quantity(cartObj,product_id, quantity )
+    }
     else
       cart.add(cartObj,product_id, 1);
 
-    cart.recalc(cartObj);
-    collection.save(cartObj, (err,cartObj)=>{
+      cart.recalc(cartObj);
+      collection.save(cartObj, (err,cartObj)=>{
       res.json(cartObj);
     });
   });
@@ -79,6 +90,10 @@ app.delete('/cart/product',(req, res) => {
   const product_id = req.body['product'];
   const cart_id = req.body['cart_id'];
   const id = mongojs.ObjectId(cart_id);
+
+  console.log("id mongo" , id)
+  console.log("id reg" , cart_id)
+
 
   collection.findOne({_id:id},(err,cartObj)=>{
     cart.remove(cartObj,product_id);

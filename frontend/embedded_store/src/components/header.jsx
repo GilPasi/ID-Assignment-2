@@ -14,7 +14,7 @@ const Header = (props) => {
           {showCart ? "Hide" : "Show"} cart
         </button>
 
-        {showCart && <Cart productsList={props.selectedProducts} />}
+        {showCart && <Cart productsList={props.selectedProducts} handleClick={props.xHandler}/>}
       </div>
     </header>
   );

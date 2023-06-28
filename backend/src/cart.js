@@ -8,7 +8,9 @@ const get_empty_cart = ()=>{
 }
 
 const cart_add = (cartObj, product_id, quantity) => {
+
   if (product_id in cartObj.items){
+    console.log("HERE")
     cartObj.items[product_id].quantity += quantity;
   }else{
     cartObj.items[product_id] = {
@@ -21,6 +23,8 @@ const cart_add = (cartObj, product_id, quantity) => {
 }
 
 const cart_update_quantity = (cartObj, product_id, quantity) => {
+
+
   if (product_id in cartObj.items){
     cartObj.items[product_id].quantity = quantity;
   }
@@ -29,6 +33,9 @@ const cart_update_quantity = (cartObj, product_id, quantity) => {
 
 
 const cart_remove = (cartObj, product_id, quantity) => {
+
+  console.log("OBJ" , cartObj)
+
   if (product_id in cartObj.items){
     if (quantity) cartObj.items[product_id].quantity -= quantity;
     if (!quantity || cartObj.items[product_id].quantity <0 ){

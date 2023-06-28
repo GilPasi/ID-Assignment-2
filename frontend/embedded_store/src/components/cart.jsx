@@ -11,10 +11,10 @@ const Cart = (props) => {
   let listElement = <></>;
   if (props.productsList)
     listElement = props.productsList.map((prod) => (
-      <li>
+      <li className="aligner">
         {prod.name} <input type="number" value={prod.quantity} />
         <span>{prod.quantity * prod.unitPrice}$</span>
-        <button>X</button>
+        <button onClick={props.handleClick}>X</button>
       </li>
     ));
 
