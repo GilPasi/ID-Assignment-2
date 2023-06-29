@@ -1,3 +1,9 @@
+/*Internet development course - Assignment 4 
+  Authors:
+    Yulia Moshan 319656510
+    Gil Pasi     206500936
+    Dependencies: nodemon, express, cors, mongojs
+*/
 const express = require('express')
 const cors = require('cors');
 const cart = require('./src/cart.js')
@@ -19,7 +25,7 @@ if (!collection){
 }
 
 const logRequest = (req,res,next) => {
-  console.log(`Received request to ${req.url}`)
+  console.log(`Received request to ${req.url} for ${req.method}`)
   next()
 }
 app.use(logRequest)
@@ -53,21 +59,14 @@ app.get('/cart',(req, res) => {
 
 
 app.post('/cart/product',(req, res) => {
+  console.log("body", req.body)
   const cart_id = req.body['cart_id']
   const product_id = req.body['product'];
   const quantity = req.body['quantity'] ;
-
-  console.log("body" , req.body)
-
-  
   const id = mongojs.ObjectId(cart_id);
+
+
   collection.findOne({_id:id},(err,cartObj)=>{
-    
-
-
-
-    console.log(cartObj)
-    
     if (!cartObj){
       cartObj = cart.new();
     }
@@ -79,6 +78,7 @@ app.post('/cart/product',(req, res) => {
       cart.add(cartObj,product_id, 1);
 
       cart.recalc(cartObj);
+      console.log("cart" , cartObj);
       collection.save(cartObj, (err,cartObj)=>{
       res.json(cartObj);
     });
@@ -91,10 +91,6 @@ app.delete('/cart/product',(req, res) => {
   const cart_id = req.body['cart_id'];
   const id = mongojs.ObjectId(cart_id);
 
-  console.log("id mongo" , id)
-  console.log("id reg" , cart_id)
-
-
   collection.findOne({_id:id},(err,cartObj)=>{
     cart.remove(cartObj,product_id);
     cart.recalc(cartObj);
@@ -103,7 +99,25 @@ app.delete('/cart/product',(req, res) => {
       res.json(cartObj);
     });
   });
-  
+})
+
+
+app.put('/cart/product' , (req,res)=>{
+  const product_id = req.body['product'];
+  const cart_id = req.body['cart_id'];
+  const quantity = req.body['quantity'];
+  const id = mongojs.ObjectId(cart_id);
+
+  collection.findOne({_id:id},(err , cartObj)=>{
+    if(quantity){
+      cart.update_quantity(cartObj,product_id, quantity )
+    }
+
+    cart.recalc(cartObj);
+    collection.save(cartObj, (err,cartObj)=>{
+      res.json(cartObj);
+    })
+  })
 })
 
 

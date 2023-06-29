@@ -1,20 +1,34 @@
 const Cart = (props) => {
+  const { productsList, handleClick, handleChange } = props;
+
   /*The products list must work by the following template:
     prodList=[
         ...
-        {name:"arduino", 
+        {
+        productId: "arduino",
+        name:"Arduino", 
         quantity:3,
         unitPrice:25},
         ...
     ]
     */
   let listElement = <></>;
+
+  //On the initial connection, do not calculate the cart
   if (props.productsList)
-    listElement = props.productsList.map((prod) => (
+    listElement = productsList.map((prod) => (
       <li className="aligner">
-        {prod.name} <input type="number" value={prod.quantity} />
+        {prod.name}{" "}
+        <input
+          type="number"
+          value={prod.quantity}
+          onChange={handleChange}
+          name={prod.productId}
+        />
         <span>{prod.quantity * prod.unitPrice}$</span>
-        <button onClick={props.handleClick}>X</button>
+        <button onClick={handleClick} name={prod.productId}>
+          X
+        </button>
       </li>
     ));
 

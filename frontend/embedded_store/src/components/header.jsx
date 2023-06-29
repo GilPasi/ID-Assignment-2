@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Cart from "./cart";
 const Header = (props) => {
+  const { handleX, handleEdit, selectedProducts } = props;
   const [showCart, setShowCart] = useState(false);
 
   return (
@@ -14,7 +15,13 @@ const Header = (props) => {
           {showCart ? "Hide" : "Show"} cart
         </button>
 
-        {showCart && <Cart productsList={props.selectedProducts} handleClick={props.xHandler}/>}
+        {showCart && (
+          <Cart
+            productsList={selectedProducts}
+            handleClick={handleX}
+            handleChange={handleEdit}
+          />
+        )}
       </div>
     </header>
   );
